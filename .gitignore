@@ -2,3 +2,6 @@ idea.txt
 .env
 node_modules
 .DS_store
+results.log
+error.log
+combined.log
