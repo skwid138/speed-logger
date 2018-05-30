@@ -1,21 +1,37 @@
 'use strict';
 
+// https://hackernoon.com/webpack-3-quickstarter-configure-webpack-from-scratch-30a6c394038a
+
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const BrowserSyncPlugin = require('browser-sync-webpack-plugin')
 const config = require('./config.js');
+
+// const hotMiddlewareScript = require('webpack-hot-middleware/client?noInfo=true&timeout=20000&reload=true');
+
+// hotMiddlewareScript.subscribe(event => {
+//   if (event.action === 'reload') {
+//     window.location.reload();
+//   }
+// });
 
 const webpackConfig = {
 
     context: config.paths.src,
-    devtool: (process.env.NODE_ENV === 'development' ? '#source-map' : undefined),
+    devtool: (process.env.NODE_ENV === 'development' ? '#cheap-module-source-map' : undefined),
+    stats: false,
+    
 
     entry: {
         app: './app.js',
         vendors: './vendor.js',
+        hmr: 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000',
     },
     output: {
+        pathinfo: true,
+        publicPath: config.proxyUrl + config.publicPath,
         path: config.paths.dist,
         filename: './scripts/[name].bundle.js',
     },
@@ -26,7 +42,7 @@ const webpackConfig = {
                 enforce: 'pre',
                 test: /\.js$/,
                 include: config.paths.assets,
-                use: 'eslint',
+                use: 'eslint-loader',
             },
             {
                 test: /\.js$/,
@@ -103,6 +119,15 @@ const webpackConfig = {
         new ExtractTextPlugin({
             filename: './styles/[name]-style.css',
         }),
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.NoEmitOnErrorsPlugin(),
+        // new BrowserSyncPlugin({
+        //     host: 'localhost',
+        //     open: true,
+        //     proxyUrl: config.proxyUrl,
+        //     watch: config.watch,
+        //     delay: 500,
+        // }),
     ],
 
 };
